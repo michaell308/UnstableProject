@@ -1320,6 +1320,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4152405317605421665, guid: ac3ac9e95c263d1419d2c954d3cdc84a, type: 3}
+      propertyPath: jumpHeight
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4152405317605421667, guid: ac3ac9e95c263d1419d2c954d3cdc84a, type: 3}
       propertyPath: m_RootOrder
       value: 1
