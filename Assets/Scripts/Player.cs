@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     private static Transform playerTransform;
     public static Rigidbody2D rb;
-    public static int railNum = 2;
+    //public static int railNum = 1;
     public Transform leftPos;
     public Transform rightPos;
 
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     Vector3 dir = Vector2.zero;
 
     List<Vector3> railPositions;
-    public int railPosIdx = 1;
+    public static int railPosIdx = 1;
 
     private static bool playerIsDead = false;
 
