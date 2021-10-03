@@ -53,6 +53,7 @@ public class Grinding : MonoBehaviour
         if (transform.localRotation.eulerAngles.z >= 20 && transform.localRotation.eulerAngles.z <= 320)
         {
             Debug.Log("DEATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+            Player.Death();
         }
         /*if (transform.localRotation.eulerAngles.z <= 320) {
             Debug.Log("death");
