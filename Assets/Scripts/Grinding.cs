@@ -31,13 +31,17 @@ public class Grinding : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * playerTiltSpeed);
         }
 
-        if (transform.localRotation.eulerAngles.z >= 292 && transform.localRotation.eulerAngles.z <= 342)
+        float currentAngle = transform.localRotation.eulerAngles.z;
+
+        if (currentAngle >= 292 && currentAngle <= 342)
         {
+            Debug.Log("right");
             transform.Rotate(0.0f, 0.0f, -autoTiltSpeed * Time.deltaTime); //this tilts us to the right
         }
-        else if ((transform.localRotation.eulerAngles.z >= 342 && transform.localRotation.eulerAngles.z <= 360) ||
-            (transform.localRotation.eulerAngles.z >= 0 && transform.localRotation.eulerAngles.z <= 32))
+        else if ((currentAngle >= 342 && currentAngle <= 360) ||
+            (currentAngle >= 0 && currentAngle <= 32))
         {
+            Debug.Log("left");
             transform.Rotate(0.0f, 0.0f, autoTiltSpeed * Time.deltaTime); 
         }
 
@@ -45,7 +49,7 @@ public class Grinding : MonoBehaviour
         //transform.Rotate(0.0f, 0.0f,  (0.3f + -moveInput) * speed * Time.deltaTime);
         //transform.rotation = transform.rotation + Quaternion.Euler(0,0,1);
         //Debug.Log(transform.localRotation.eulerAngles.z);
-        if (transform.localRotation.eulerAngles.z >= 32 && transform.localRotation.eulerAngles.z <= 292)
+        if (currentAngle >= 32 && currentAngle <= 292)
         {
             Debug.Log("DEATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
             Player.Death();
