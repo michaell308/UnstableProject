@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    public Rigidbody2D playerWithBoardRB;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +20,11 @@ public class Board : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Hazard"))
         {
-            playerWithBoardRB.gravityScale = 1;
+            if (Player.railNum == collision.GetComponentInParent<HazardGroup>().railNum)
+            {
+                Debug.Log("you died...");
+                Player.Death();
+            }
         }
     }
 }
