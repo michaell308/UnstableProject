@@ -11,8 +11,8 @@ public class Player : MonoBehaviour
     public Transform rightPos;
 
     //Movement vectors for each possible direction
-    Vector2 playerJumpVerticalUpVelocity = new Vector2(0, 10);
-    Vector2 playerJumpVerticalDownVelocity = new Vector2(0, -10);
+    Vector2 playerJumpVerticalUpVelocity;
+    Vector2 playerJumpVerticalDownVelocity;
 
     //Booleans for key input
     bool playerJumpVerticalPress = false;
@@ -26,9 +26,15 @@ public class Player : MonoBehaviour
 
     private static bool playerIsDead = false;
 
+    //variables to tweak jump numbers
+    public float jumpTime = 0.2f;
+    public int jumpVelocity = 30;
+
     // Start is called before the first frame update
     void Start()
     {
+        playerJumpVerticalUpVelocity = new Vector2(0, jumpVelocity);
+        playerJumpVerticalDownVelocity = new Vector2(0, -jumpVelocity);
         playerTransform = this.transform;
         rb = this.GetComponent<Rigidbody2D>();
         railPositions = new List<Vector3>();
@@ -139,7 +145,7 @@ public class Player : MonoBehaviour
                     railPosIdx++;
                 }
             }
-            if (Input.GetKeyDown(KeyCode.W) && movingPlayerVertical && !movingPlayerHorizontal)
+            if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
                 movingPlayerVertical = true;
                 playerJumpVerticalPress = true;
@@ -160,7 +166,7 @@ public class Player : MonoBehaviour
     //Keeps applied upwards velocity of jump for X seconds before stopping. Then applies downwards velocity
     IEnumerator VerticalJumpUpTimer()
     {
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(jumpTime);
         rb.velocity = playerJumpVerticalDownVelocity;
         StartCoroutine("VerticalJumpDownTimer");
     }
@@ -168,7 +174,7 @@ public class Player : MonoBehaviour
     //Keeps applied downwards velocity of jump for X seconds before stopping and enabling player input again
     IEnumerator VerticalJumpDownTimer()
     {
-        yield return new WaitForSeconds(.12f);
+        yield return new WaitForSeconds(jumpTime + 0.02f);
         rb.velocity = Vector2.zero;
         movingPlayerVertical = false;
     }
