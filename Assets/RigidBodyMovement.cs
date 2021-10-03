@@ -5,7 +5,6 @@ using UnityEngine;
 public class RigidBodyMovement : MonoBehaviour
 {
     public Transform leftPos;
-    public Transform playerPos;
     public Transform rightPos;
 
     //Rigid body
@@ -14,20 +13,11 @@ public class RigidBodyMovement : MonoBehaviour
     //Movement vectors for each possible direction
     Vector2 playerJumpVerticalUpVelocity = new Vector2(0, 10);
     Vector2 playerJumpVerticalDownVelocity = new Vector2(0, -10);
-    Vector2 playerJumpLeftVelocity = new Vector2(-8, 2);
-    Vector2 playerJumpRightVelocity = new Vector2(8, -2);
 
     //Booleans for key input
     bool playerJumpVerticalPress = false;
-    //bool playerJumpHorizontalPress = false;
-    bool notMovingPlayerHorizontal = true;
+    bool movingPlayerVertical = false;
     bool movingPlayerHorizontal = false;
-
-    bool hitLeft = false;
-    bool hitRight = false;
-
-    //Horizontal Direction
-    //float playerHorizontalDirection;
 
     List<Vector3> railPositions;
     int railPosIdx = 1;
@@ -37,14 +27,14 @@ public class RigidBodyMovement : MonoBehaviour
     {
         railPositions = new List<Vector3>();
         railPositions.Add(leftPos.position);
-        railPositions.Add(playerPos.position);
+        railPositions.Add(transform.position);
         railPositions.Add(rightPos.position);
         rb = GetComponent<Rigidbody2D>();
     }
 
     void FixedUpdate()
     {
-        //Check if vertical button is pressed. NOTE: Pressing 'S' will also jump.
+        //Check if vertical button is pressed.
         if (playerJumpVerticalPress)
         {
             //Set key press to false so that the function is not called multiple times
@@ -54,33 +44,6 @@ public class RigidBodyMovement : MonoBehaviour
             rb.velocity = playerJumpVerticalUpVelocity;
             StartCoroutine("VerticalJumpUpTimer");
         }
-
-        //Check if left is pressed
-        if (hitLeft && false)
-        {
-            //Set key press to false so that the function is not called multiple times
-            //playerJumpHorizontalPress = false;
-            
-           // Debug.Log("hit left");
-           // playerInputEnabled = false;
-            //hitLeft = false;
-            //Apply left horizontal velocity
-            //rb.velocity = playerJumpLeftVelocity;
-            //StartCoroutine("HorizontalJumpTimer");
-        }
-        else if (hitRight && false) //if(playerJumpHorizontalPress && playerHorizontalDirection > 0) //Check if right is pressed
-        {
-            //playerInputEnabled = false;
-            //hitRight = false;
-            //Set key press to false so that the function is not called multiple times
-            //playerJumpHorizontalPress = false;
-            //hitRight = false;
-           // rb.velocity = playerJumpRightVelocity;
-            //StartCoroutine("HorizontalJumpTimer");
-            //Apply right horizontal velocity
-            //rb.velocity = playerJumpRightVelocity;
-            //StartCoroutine("HorizontalJumpTimer");
-        }
     }
     // Update is called once per frame
     //Checks for key presses and if player input is enabled
@@ -88,58 +51,34 @@ public class RigidBodyMovement : MonoBehaviour
     {
         if (movingPlayerHorizontal && transform.position != railPositions[railPosIdx])
         {
-            Debug.Log("ok?");
             transform.position = Vector3.MoveTowards(transform.position, railPositions[railPosIdx], Time.deltaTime * 10); //can also be Lerp instead
         }
         if (transform.position == railPositions[railPosIdx])
         {
-            Debug.Log("ok?2");
             movingPlayerHorizontal = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && !movingPlayerHorizontal && notMovingPlayerHorizontal)
+        if (Input.GetKeyDown(KeyCode.Q) && !movingPlayerHorizontal && !movingPlayerVertical)
         {
-            
             if (railPosIdx > 0)
             {
                 movingPlayerHorizontal = true;
                 railPosIdx--;
-                /*while (transform.position != railPositions[railPosIdx])
-                {
-                    transform.position = Vector3.Lerp(transform.position, railPositions[railPosIdx], Time.deltaTime * 10);
-                }*/
             }
-            //while (transform.position !=)
-            
             
         }
-        if (Input.GetKeyDown(KeyCode.E) && !movingPlayerHorizontal && notMovingPlayerHorizontal)
+        if (Input.GetKeyDown(KeyCode.E) && !movingPlayerHorizontal && !movingPlayerVertical)
         {
             if (railPosIdx < 2)
             {
                 movingPlayerHorizontal = true;
                 railPosIdx++;
-                /*while (transform.position != railPositions[railPosIdx])
-                {
-                    transform.position = Vector3.Lerp(transform.position, railPositions[railPosIdx], Time.deltaTime * 10);
-                }*/
             }
         }
-        if (Input.GetKeyDown(KeyCode.W) && notMovingPlayerHorizontal && !movingPlayerHorizontal)
+        if (Input.GetKeyDown(KeyCode.W) && movingPlayerVertical && !movingPlayerHorizontal)
         {
-            notMovingPlayerHorizontal = false;
+            movingPlayerVertical = true;
             playerJumpVerticalPress = true;
-            //StartCoroutine("VerticalJumpUpTimer");
-        }
-        if ((hitLeft || hitRight) && notMovingPlayerHorizontal)
-        {
-            //transform.MovePosition(leftPos.position * Time.deltaTime * 10);
-            //Debug.Log("hit horizontal jump");
-            //playerInputEnabled = false;
-            //rb.velocity = playerJumpLeftVelocity;
-            //StartCoroutine("HorizontalJumpTimer");
-            //playerJumpHorizontalPress = true;
-            //playerHorizontalDirection = Input.GetAxisRaw("Horizontal");
         }
     }
 
@@ -149,7 +88,7 @@ public class RigidBodyMovement : MonoBehaviour
         Debug.Log("HorizontalJumpTimer");
         yield return new WaitForSeconds(.25f);
         rb.velocity = Vector2.zero;
-        notMovingPlayerHorizontal = true;
+        //movingPlayerVertical = false;
     }
 
     //Keeps applied upwards velocity of jump for X seconds before stopping. Then applies downwards velocity
@@ -165,6 +104,6 @@ public class RigidBodyMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(.12f);
         rb.velocity = Vector2.zero;
-        notMovingPlayerHorizontal = true;
+        movingPlayerVertical = false;
     }
 }
