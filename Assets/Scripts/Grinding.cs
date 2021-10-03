@@ -18,9 +18,6 @@ public class Grinding : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.D))
         {
-            //var lookPos = target.position - transform.position;
-            //lookPos.y = 0;
-            //var rotation = Quaternion.LookRotation(lookPos);
             Quaternion rotation = transform.rotation;
             rotation *= Quaternion.Euler(0, 0, -90); // this adds a 90 degrees Z rotation
             //var adjustRotation = transform.rotation.y + rotationAdjust; //<- this is wrong!
@@ -28,29 +25,27 @@ public class Grinding : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            //var lookPos = target.position - transform.position;
-            //lookPos.y = 0;
-            //var rotation = Quaternion.LookRotation(lookPos);
             Quaternion rotation = transform.rotation;
             rotation *= Quaternion.Euler(0, 0, 90); // this adds a 90 degrees Z rotation
             //var adjustRotation = transform.rotation.y + rotationAdjust; //<- this is wrong!
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 1);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * playerTiltSpeed);
         }
-        if (transform.localRotation.eulerAngles.z >= 320 && transform.localRotation.eulerAngles.z <= 350)
+
+        if (transform.localRotation.eulerAngles.z >= 292 && transform.localRotation.eulerAngles.z <= 342)
         {
-            transform.Rotate(0.0f, 0.0f, -autoTiltSpeed * Time.deltaTime);
+            transform.Rotate(0.0f, 0.0f, -autoTiltSpeed * Time.deltaTime); //this tilts us to the right
         }
-        else if ((transform.localRotation.eulerAngles.z >= 350 && transform.localRotation.eulerAngles.z <= 360) ||
-            (transform.localRotation.eulerAngles.z >= 0 && transform.localRotation.eulerAngles.z <= 20))
+        else if ((transform.localRotation.eulerAngles.z >= 342 && transform.localRotation.eulerAngles.z <= 360) ||
+            (transform.localRotation.eulerAngles.z >= 0 && transform.localRotation.eulerAngles.z <= 32))
         {
-            transform.Rotate(0.0f, 0.0f, autoTiltSpeed * Time.deltaTime);
+            transform.Rotate(0.0f, 0.0f, autoTiltSpeed * Time.deltaTime); 
         }
 
         float moveInput = Input.GetAxis("Horizontal");
         //transform.Rotate(0.0f, 0.0f,  (0.3f + -moveInput) * speed * Time.deltaTime);
         //transform.rotation = transform.rotation + Quaternion.Euler(0,0,1);
         //Debug.Log(transform.localRotation.eulerAngles.z);
-        if (transform.localRotation.eulerAngles.z >= 20 && transform.localRotation.eulerAngles.z <= 320)
+        if (transform.localRotation.eulerAngles.z >= 32 && transform.localRotation.eulerAngles.z <= 292)
         {
             Debug.Log("DEATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
             Player.Death();
