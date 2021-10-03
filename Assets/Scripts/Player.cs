@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Rigidbody2D playerWithBoardRB;
+    public static int railNum = 2;
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerWithBoardRB = this.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -16,11 +18,8 @@ public class Player : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public static void Death()
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Hazard"))
-        {
-            Debug.Log("hit hazard");
-        }
+        playerWithBoardRB.gravityScale = 1;
     }
 }
