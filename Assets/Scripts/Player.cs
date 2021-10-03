@@ -34,6 +34,8 @@ public class Player : MonoBehaviour
     public int jumpHeight = 5;
     public int upJumpVelocity = 700;
     public int downJumpVelocity = 500;
+    public int minUpVelocity = 100;
+    public int minDownVelocity = 100;
 
     // Start is called before the first frame update
     void Start()
@@ -59,22 +61,50 @@ public class Player : MonoBehaviour
             //Check if vertical button is pressed.
             if (movingPlayerUp)
             {
-                Debug.Log("hit up");
                 if (dir == Vector3.zero)
                 {
                     dir = railPositionsUp[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
                 }
-                rb.velocity = dir.normalized * upJumpVelocity * Time.deltaTime;
+                Vector3 dir2 = railPositionsUp[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
+
+                rb.velocity = Time.deltaTime * (new Vector3(0,minUpVelocity) + (dir2 * upJumpVelocity));
+                //Debug.Log(dir2);
+                if (dir2.y <= 0.02f)
+                {
+                    Debug.Log("stop moving player up damn you");
+                    dir = Vector3.zero;
+
+                    rb.velocity = Vector2.zero;
+                    transform.position = railPositionsUp[railPosIdx];
+                    movingPlayerDown = true;
+                    movingPlayerUp = false;
+                }
             }
 
             if (movingPlayerDown)
             {
-                Debug.Log("hit up");
                 if (dir == Vector3.zero)
                 {
                     dir = railPositions[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
                 }
-                rb.velocity = dir.normalized * downJumpVelocity * Time.deltaTime;
+
+                Vector3 dir2 = new Vector2(0, jumpHeight) + (railPositions[railPosIdx] - new Vector2(transform.position.x, transform.position.y));// - ;
+                
+                dir2 = -dir2;
+                Debug.Log(dir2);
+                rb.velocity = Time.deltaTime * (new Vector3(0, -minDownVelocity) + (dir2 * downJumpVelocity));
+                //rb.velocity = Time.deltaTime * (new Vector3(0, -minDownVelocity) + (dir2 * downJumpVelocity));
+                //dir2 = -dir2;
+                if (dir2.y <= -jumpHeight)
+                {
+                    Debug.Log("stop going down");
+                    dir = Vector3.zero;
+
+                    rb.velocity = Vector2.zero;
+                    transform.position = railPositions[railPosIdx];
+                    movingPlayerDown = false;
+                }
+
             }
 
             if (movingPlayerLeft)
@@ -143,25 +173,25 @@ public class Player : MonoBehaviour
 
             if (movingPlayerUp)
             {
-                if (transform.position.y > railPositionsUp[railPosIdx].y)
+                if (transform.position.y >= railPositionsUp[railPosIdx].y)
                 {
-                    dir = Vector3.zero;
+                    /*dir = Vector3.zero;
                    
                     rb.velocity = Vector2.zero;
                     transform.position = railPositionsUp[railPosIdx];
                     movingPlayerDown = true;
-                    movingPlayerUp = false;
+                    movingPlayerUp = false;*/
                 }
             }
             if (movingPlayerDown)
             {
-                if (transform.position.y < railPositions[railPosIdx].y)
+                if (transform.position.y <= railPositions[railPosIdx].y)
                 {
-                    dir = Vector3.zero;
+                   /* dir = Vector3.zero;
 
                     rb.velocity = Vector2.zero;
                     transform.position = railPositions[railPosIdx];
-                    movingPlayerDown = false;
+                    movingPlayerDown = false;*/
                 }
             }
             /*if (transform.position == railPositions[railPosIdx])
