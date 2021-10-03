@@ -12,12 +12,14 @@ public class RigidBodyMovement : MonoBehaviour
     Vector2 playerJumpVerticalDownVelocity = new Vector2(0, -10);
     Vector2 playerJumpLeftVelocity = new Vector2(-8, 2);
     Vector2 playerJumpRightVelocity = new Vector2(8, -2);
-    Vector2 playerStopVelocity = new Vector2(0, 0);
 
     //Booleans for key input
     bool playerJumpVerticalPress = false;
     bool playerJumpHorizontalPress = false;
     bool playerInputEnabled = true;
+
+    //Horizontal Direction
+    float playerHorizontalDirection;
 
     // Start is called before the first frame update
     void Start()
@@ -27,8 +29,8 @@ public class RigidBodyMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        //Check if vertical button is pressed and make sure only going up is allowed
-        if (playerJumpVerticalPress && Input.GetAxisRaw("Vertical") > 0)
+        //Check if vertical button is pressed. NOTE: Pressing 'S' will also jump.
+        if (playerJumpVerticalPress)
         {
             //Set key press to false so that the function is not called multiple times
             playerJumpVerticalPress = false;
@@ -36,11 +38,10 @@ public class RigidBodyMovement : MonoBehaviour
             //Apply upwards vertical velocity
             rb.velocity = playerJumpVerticalUpVelocity;
             StartCoroutine("VerticalJumpUpTimer");
-            StartCoroutine("VerticalJumpDownTimer");
         }
 
         //Check if left is pressed
-        if (playerJumpHorizontalPress && Input.GetAxisRaw("Horizontal") < 0)
+        if (playerJumpHorizontalPress && playerHorizontalDirection < 0)
         {
             //Set key press to false so that the function is not called multiple times
             playerJumpHorizontalPress = false;
@@ -51,7 +52,7 @@ public class RigidBodyMovement : MonoBehaviour
         }
 
         //Check if right is pressed
-        if(playerJumpHorizontalPress && Input.GetAxisRaw("Horizontal") > 0)
+        if(playerJumpHorizontalPress && playerHorizontalDirection > 0)
         {
             //Set key press to false so that the function is not called multiple times
             playerJumpHorizontalPress = false;
@@ -74,6 +75,7 @@ public class RigidBodyMovement : MonoBehaviour
         {
             playerInputEnabled = false;
             playerJumpHorizontalPress = true;
+            playerHorizontalDirection = Input.GetAxisRaw("Horizontal");
         }
     }
 
@@ -81,7 +83,7 @@ public class RigidBodyMovement : MonoBehaviour
     IEnumerator HorizontalJumpTimer()
     {
         yield return new WaitForSeconds(.25f);
-        rb.velocity = playerStopVelocity;
+        rb.velocity = Vector2.zero;
         
         playerInputEnabled = true;
     }
@@ -90,15 +92,15 @@ public class RigidBodyMovement : MonoBehaviour
     IEnumerator VerticalJumpUpTimer()
     {
         yield return new WaitForSeconds(.1f);
-        rb.velocity = playerStopVelocity;
         rb.velocity = playerJumpVerticalDownVelocity;
+        StartCoroutine("VerticalJumpDownTimer");
     }
 
     //Keeps applied downwards velocity of jump for X seconds before stopping and enabling player input again
     IEnumerator VerticalJumpDownTimer()
     {
-        yield return new WaitForSeconds(.22f);
-        rb.velocity = playerStopVelocity;
+        yield return new WaitForSeconds(.12f);
+        rb.velocity = Vector2.zero;
         playerInputEnabled = true;
     }
 }
