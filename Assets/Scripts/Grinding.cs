@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Grinding : MonoBehaviour
 {
-    private float playerTiltSpeed = 1;
-    private float autoTiltSpeed = 20;
+    public float playerTiltSpeed = 1;
+    public float autoTiltSpeed = 20;
     private Vector3 originalRotation;
     // Start is called before the first frame update
     void Start()
