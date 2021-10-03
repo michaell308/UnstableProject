@@ -9,38 +9,47 @@ public class Player : MonoBehaviour
     //public static int railNum = 1;
     public Transform leftPos;
     public Transform rightPos;
+    
 
     //Movement vectors for each possible direction
     Vector2 playerJumpVerticalUpVelocity;
     Vector2 playerJumpVerticalDownVelocity;
 
     //Booleans for key input
-    bool playerJumpVerticalPress = false;
-    bool movingPlayerVertical = false;
     bool movingPlayerLeft = false;
     bool movingPlayerRight = false;
+    bool movingPlayerUp = false;
+    bool movingPlayerDown = false;
     Vector3 dir = Vector2.zero;
 
-    List<Vector3> railPositions;
+    List<Vector2> railPositions;
     public static int railPosIdx = 1;
+    List<Vector2> railPositionsUp;
 
     private static bool playerIsDead = false;
 
     //variables to tweak jump numbers
-    public float jumpTime = 0.2f;
-    public int jumpVelocity = 30;
+    //public float jumpTime = 0.2f;
+    //public int jumpVelocity = 30;
+    public int jumpHeight = 5;
+    public int upJumpVelocity = 700;
+    public int downJumpVelocity = 500;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerJumpVerticalUpVelocity = new Vector2(0, jumpVelocity);
-        playerJumpVerticalDownVelocity = new Vector2(0, -jumpVelocity);
+        //playerJumpVerticalUpVelocity = new Vector2(0, jumpVelocity);
+        //playerJumpVerticalDownVelocity = new Vector2(0, -jumpVelocity);
         playerTransform = this.transform;
         rb = this.GetComponent<Rigidbody2D>();
-        railPositions = new List<Vector3>();
+        railPositions = new List<Vector2>();
         railPositions.Add(leftPos.position);
         railPositions.Add(transform.position);
         railPositions.Add(rightPos.position);
+        railPositionsUp = new List<Vector2>();
+        railPositionsUp.Add(new Vector2(leftPos.position.x, leftPos.position.y + jumpHeight));
+        railPositionsUp.Add(new Vector2(transform.position.x, transform.position.y + jumpHeight));
+        railPositionsUp.Add(new Vector2(rightPos.position.x, rightPos.position.y + jumpHeight));
     }
 
     private void FixedUpdate()
@@ -48,14 +57,24 @@ public class Player : MonoBehaviour
         if (!playerIsDead)
         {
             //Check if vertical button is pressed.
-            if (playerJumpVerticalPress)
+            if (movingPlayerUp)
             {
-                //Set key press to false so that the function is not called multiple times
-                playerJumpVerticalPress = false;
+                Debug.Log("hit up");
+                if (dir == Vector3.zero)
+                {
+                    dir = railPositionsUp[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
+                }
+                rb.velocity = dir.normalized * upJumpVelocity * Time.deltaTime;
+            }
 
-                //Apply upwards vertical velocity
-                rb.velocity = playerJumpVerticalUpVelocity;
-                StartCoroutine("VerticalJumpUpTimer");
+            if (movingPlayerDown)
+            {
+                Debug.Log("hit up");
+                if (dir == Vector3.zero)
+                {
+                    dir = railPositions[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
+                }
+                rb.velocity = dir.normalized * downJumpVelocity * Time.deltaTime;
             }
 
             if (movingPlayerLeft)
@@ -121,11 +140,37 @@ public class Player : MonoBehaviour
                     transform.position = railPositions[railPosIdx];
                 }
             }
+
+            if (movingPlayerUp)
+            {
+                if (transform.position.y > railPositionsUp[railPosIdx].y)
+                {
+                    dir = Vector3.zero;
+                   
+                    rb.velocity = Vector2.zero;
+                    transform.position = railPositionsUp[railPosIdx];
+                    movingPlayerDown = true;
+                    movingPlayerUp = false;
+                }
+            }
+            if (movingPlayerDown)
+            {
+                if (transform.position.y < railPositions[railPosIdx].y)
+                {
+                    dir = Vector3.zero;
+
+                    rb.velocity = Vector2.zero;
+                    transform.position = railPositions[railPosIdx];
+                    movingPlayerDown = false;
+                }
+            }
             /*if (transform.position == railPositions[railPosIdx])
             {
                 movingPlayerLeft = false;
             }*/
             bool movingPlayerHorizontal = movingPlayerLeft || movingPlayerRight;
+            bool movingPlayerVertical = movingPlayerUp || movingPlayerDown;
+
             if (Input.GetKeyDown(KeyCode.Q) && !movingPlayerHorizontal && !movingPlayerVertical)
             {
                 if (railPosIdx > 0)
@@ -147,14 +192,14 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
-                movingPlayerVertical = true;
-                playerJumpVerticalPress = true;
+
+                movingPlayerUp = true;
             }
         }
     }
 
     //Keeps applied horizontal velocity of jump for X seconds before stopping velocity and enabling player input again
-    IEnumerator HorizontalJumpTimer()
+    /*IEnumerator HorizontalJumpTimer()
     {
         yield return new WaitForSeconds(.25f);
         rb.velocity = Vector2.zero;
@@ -166,7 +211,7 @@ public class Player : MonoBehaviour
     //Keeps applied upwards velocity of jump for X seconds before stopping. Then applies downwards velocity
     IEnumerator VerticalJumpUpTimer()
     {
-        yield return new WaitForSeconds(jumpTime);
+        //yield return new WaitForSeconds(jumpTime);
         rb.velocity = playerJumpVerticalDownVelocity;
         StartCoroutine("VerticalJumpDownTimer");
     }
@@ -174,10 +219,9 @@ public class Player : MonoBehaviour
     //Keeps applied downwards velocity of jump for X seconds before stopping and enabling player input again
     IEnumerator VerticalJumpDownTimer()
     {
-        yield return new WaitForSeconds(jumpTime + 0.02f);
+        //yield return new WaitForSeconds(jumpTime + 0.02f);
         rb.velocity = Vector2.zero;
-        movingPlayerVertical = false;
-    }
+    }*/
 
     public static void Death()
     {
