@@ -20,7 +20,7 @@ public class Board : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Hazard"))
         {
-            if (Player.railNum == collision.GetComponentInParent<HazardGroup>().railNum)
+            if (Player.railPosIdx == collision.GetComponentInParent<HazardGroup>().railNum)
             {
                 Debug.Log("you died...");
                 Player.Death();
