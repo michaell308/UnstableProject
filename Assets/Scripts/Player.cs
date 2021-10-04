@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     private static Transform playerTransform;
@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     public int railPosIdx = 1;
     List<Vector2> railPositionsUp;
 
-    private static bool playerIsDead = false;
+    private bool playerIsDead = false;
 
     //variables to tweak jump numbers
     //public float jumpTime = 0.2f;
@@ -61,6 +61,8 @@ public class Player : MonoBehaviour
     public bool gameOver = false;
 
     public Animator idleAndJumpAnimator;
+
+    public Grinding grinding;
 
     // Start is called before the first frame update
     void Start()
@@ -153,7 +155,7 @@ public class Player : MonoBehaviour
                         enableFlare();
                         jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
                         grindingAudioSource.UnPause();
-                        Grinding.shouldTilt = true;
+                        grinding.shouldTilt = true;
                     }
                 }
 
@@ -297,14 +299,14 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
-                idleAndJumpAnimator.Play("Jump");
+                //idleAndJumpAnimator.Play("Jump");
                 grindingAudioSource.Pause();
                 //Stop flare animation
                 disableFlare();
                 createSpark();
 
                 movingPlayerUp = true;
-                Grinding.shouldTilt = false;
+                grinding.shouldTilt = false;
                 jumpAudioSource.PlayOneShot(jumpClipSfx, 0.5F);
             }
         }
@@ -348,8 +350,9 @@ public class Player : MonoBehaviour
             //rb.velocity = Vector2.zero;
             rb.gravityScale = 2;
             playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
-            Grinding.shouldTilt = false;
+            grinding.shouldTilt = false;
             disableFlare();
+            StartCoroutine("RestartLevel");
         }
     }
 
@@ -373,24 +376,27 @@ public class Player : MonoBehaviour
 
     private void moveScarfPositionHorizontal()
     {
-        int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
-
-        if (curFrame == 0) //regular
+       // scarfTransform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        //int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
+        //scarfTransform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        /*if (curFrame == 0) //regular
         {
-            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
+            scarfTransform.position = new Vector3(transform.position.x - 2.13f, transform.position.y - 2.15f, 0);
         }
         else if (curFrame == 1) //down
         {
-            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.22f, 0);
+            scarfTransform.position = new Vector3(transform.position.x - 2.13f, transform.position.y - 2.22f, 0);
         }
         else //bottom
         {
-            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.29f, 0);
-        }
+            scarfTransform.position = new Vector3(transform.position.x - 2.13f, transform.position.y - 2.29f, 0);
+        }*/
     }
 
     private void moveScarfPositionVertical()
     {
+       // scarfTransform.position = new Vector3(transform.position.x-2.06f, transform.position.y- 2.352287f+0.43f, 0);
+        //scarfTransform.position = new Vector3(transform.position.x, transform.position.y, 0);
         /*int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
 
         if (curFrame == 0) //regular
@@ -405,11 +411,21 @@ public class Player : MonoBehaviour
         {
             scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.29f, 0);
         }*/
-       // Debug.Log("p1: " + scarfPositionOnPlayer.position);
-      //  Debug.Log("p2: " + scarfPositionOnPlayer.localPosition);
-      //  Debug.Log("p3: " + scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition));
-       // scarfTransform.position = scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition);
+        //only change y position, not x
+        Debug.Log("p1: " + scarfPositionOnPlayer.position);
+        Debug.Log("p2: " + scarfPositionOnPlayer.localPosition);
+        Debug.Log("p3: " + scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition));
+        //scarfTransform.position = scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition);
+        //scarfTransform.position = new Vector3(scarfTransform.position.x, playerCharacterSprite.position.y -2.5f, scarfTransform.position.z);
+        //scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
         //Vector3 diff = transform.position - Vector3.zero;
         //scarfTransform.position = new Vector3(transform.position.x, transform.position.y+diff.y, 0);
+    }
+    IEnumerator RestartLevel()
+    {
+        yield return new WaitForSeconds(2f);
+        Scene thisScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(thisScene.name);
+        //movingPlayerVertical = false;
     }
 }
