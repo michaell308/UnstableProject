@@ -44,7 +44,7 @@ public class Board : MonoBehaviour
             bool playerIsJumping = player.movingPlayerUp || player.movingPlayerDown;
             if (player.railPosIdx == collision.GetComponentInParent<HazardGroup>().railNum && !playerIsJumping)
             {
-                Debug.Log("you died...");
+                //Debug.Log("you died...");
                 player.Death(10);
             }
         }

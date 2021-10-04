@@ -18,7 +18,7 @@ public class ScarfAttachedTo : MonoBehaviour
     {
         if(player.movingPlayerUp || player.movingPlayerDown)
         {
-            transform.position = playerCharacterSprite.position;
+            //transform.position = playerCharacterSprite.position;
         }
         transform.rotation = playerCharacterSprite.rotation;
     }
