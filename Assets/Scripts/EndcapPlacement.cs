@@ -12,12 +12,13 @@ public class EndcapPlacement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (startEndcap)
+        /*if (startEndcap)
         {
             if (GetComponent<SpriteRenderer>().sprite.name == "rail large")
             {
-                Vector3 endcapPosition = new Vector3(transform.position.x - 8.602f, transform.position.y - 8.579f, 0);
-                Transform endcap = Instantiate(startEndcapPrefab, endcapPosition, Quaternion.Euler(0, 0, 45));
+                //Vector3 endcapPosition = new Vector3(transform.position.x, transform.position.y - 12.9f, 0);
+                Transform endcap = Instantiate(startEndcapPrefab, transform.position, Quaternion.Euler(0, 0, 45));
+                endcap.Translate(new Vector3(0, -12.9f, 0));
                 endcap.SetParent(GameObject.FindWithTag("World").transform);
             }
             if (GetComponent<SpriteRenderer>().sprite.name == "rail medium")
@@ -42,7 +43,7 @@ public class EndcapPlacement : MonoBehaviour
                 Transform endcap = Instantiate(stopEndcapPrefab, endcapPosition, Quaternion.Euler(0, 0, 45));
                 endcap.SetParent(GameObject.FindWithTag("World").transform);
             }
-        }
+        }*/
     }
 
     // Update is called once per frame

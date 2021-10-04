@@ -297,7 +297,7 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
-                idleAndJumpAnimator.Play("Jump");
+                //idleAndJumpAnimator.Play("Jump");
                 grindingAudioSource.Pause();
                 //Stop flare animation
                 disableFlare();
@@ -373,24 +373,27 @@ public class Player : MonoBehaviour
 
     private void moveScarfPositionHorizontal()
     {
-        int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
-
-        if (curFrame == 0) //regular
+       // scarfTransform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        //int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
+        //scarfTransform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        /*if (curFrame == 0) //regular
         {
-            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
+            scarfTransform.position = new Vector3(transform.position.x - 2.13f, transform.position.y - 2.15f, 0);
         }
         else if (curFrame == 1) //down
         {
-            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.22f, 0);
+            scarfTransform.position = new Vector3(transform.position.x - 2.13f, transform.position.y - 2.22f, 0);
         }
         else //bottom
         {
-            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.29f, 0);
-        }
+            scarfTransform.position = new Vector3(transform.position.x - 2.13f, transform.position.y - 2.29f, 0);
+        }*/
     }
 
     private void moveScarfPositionVertical()
     {
+       // scarfTransform.position = new Vector3(transform.position.x-2.06f, transform.position.y- 2.352287f+0.43f, 0);
+        //scarfTransform.position = new Vector3(transform.position.x, transform.position.y, 0);
         /*int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
 
         if (curFrame == 0) //regular
@@ -405,10 +408,13 @@ public class Player : MonoBehaviour
         {
             scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.29f, 0);
         }*/
-       // Debug.Log("p1: " + scarfPositionOnPlayer.position);
-      //  Debug.Log("p2: " + scarfPositionOnPlayer.localPosition);
-      //  Debug.Log("p3: " + scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition));
-       // scarfTransform.position = scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition);
+        //only change y position, not x
+        Debug.Log("p1: " + scarfPositionOnPlayer.position);
+        Debug.Log("p2: " + scarfPositionOnPlayer.localPosition);
+        Debug.Log("p3: " + scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition));
+        //scarfTransform.position = scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition);
+        //scarfTransform.position = new Vector3(scarfTransform.position.x, playerCharacterSprite.position.y -2.5f, scarfTransform.position.z);
+        //scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
         //Vector3 diff = transform.position - Vector3.zero;
         //scarfTransform.position = new Vector3(transform.position.x, transform.position.y+diff.y, 0);
     }
