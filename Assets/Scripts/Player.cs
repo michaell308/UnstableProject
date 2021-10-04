@@ -18,8 +18,8 @@ public class Player : MonoBehaviour
     //Booleans for key input
     bool movingPlayerLeft = false;
     bool movingPlayerRight = false;
-    bool movingPlayerUp = false;
-    bool movingPlayerDown = false;
+    public bool movingPlayerUp = false;
+    public bool movingPlayerDown = false;
     Vector3 dir = Vector2.zero;
 
     List<Vector2> railPositions;
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     //variables to tweak jump numbers
     //public float jumpTime = 0.2f;
     //public int jumpVelocity = 30;
-    public int jumpHeight = 5;
+    public float jumpHeight = 5;
     public int upJumpVelocity = 700;
     public int downJumpVelocity = 500;
     public int minUpVelocity = 100;
@@ -51,6 +51,10 @@ public class Player : MonoBehaviour
     public AudioSource jumpAudioSource;
     public AudioSource deathAudioSource;
     public AudioSource grindingAudioSource;
+
+    public Transform boardCollider;
+    public Transform scarfTransform;
+    public Transform playerCharacterSprite;
 
     // Start is called before the first frame update
     void Start()
@@ -118,20 +122,30 @@ public class Player : MonoBehaviour
                 rb.velocity = Time.deltaTime * (new Vector3(0, -minDownVelocity) + (dir2 * downJumpVelocity));
                 //rb.velocity = Time.deltaTime * (new Vector3(0, -minDownVelocity) + (dir2 * downJumpVelocity));
                 //dir2 = -dir2;
-                if (dir2.y <= -jumpHeight)
+                if (dir2.y < -jumpHeight || Mathf.Approximately(dir2.y, -jumpHeight))
                 {
-                    Debug.Log("stop going down");
-                    dir = Vector3.zero;
+                    if (boardCollider.GetComponent<Board>().onHazard)
+                    {
+                        Debug.Log("let them fall");
+                        Death(10);
+                    }
+                    else
+                    {
+                        //successfully landed after a jump here
+                        Debug.Log("stop going down");
+                        dir = Vector3.zero;
 
-                    rb.velocity = Vector2.zero;
-                    transform.position = railPositions[railPosIdx];
-                    movingPlayerDown = false;
+                        rb.velocity = Vector2.zero;
+                        transform.position = railPositions[railPosIdx];
+                        scarfTransform.position = transform.position;
+                        movingPlayerDown = false;
 
-                    //Resume flare animation
-                    enableFlare();
-                    jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
-                    grindingAudioSource.UnPause();
-                    Grinding.shouldTilt = true;
+                        //Resume flare animation
+                        enableFlare();
+                        jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
+                        grindingAudioSource.UnPause();
+                        Grinding.shouldTilt = true;
+                    }
                 }
 
             }
@@ -300,12 +314,12 @@ public class Player : MonoBehaviour
         rb.velocity = Vector2.zero;
     }*/
 
-    public void Death()
+    public void Death(int deathVelocity)
     {
         deathAudioSource.PlayOneShot(deathClipSfx, 0.5f);
         playerIsDead = true;
         Debug.Log("player death");
-        rb.velocity = rb.velocity.normalized * 5;
+        rb.velocity = rb.velocity.normalized * deathVelocity;
         //rb.velocity = Vector2.zero;
         rb.gravityScale = 2;
         playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
