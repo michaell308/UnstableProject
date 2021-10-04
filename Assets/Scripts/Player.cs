@@ -37,6 +37,13 @@ public class Player : MonoBehaviour
     public int minUpVelocity = 100;
     public int minDownVelocity = 100;
 
+    //References for object that contains flare animation
+    public GameObject flare;
+    public Animator flareAnim;
+
+    //IEnumerator? Need to play animation and THEN  delete it.
+    public Transform sparkPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,6 +59,12 @@ public class Player : MonoBehaviour
         railPositionsUp.Add(new Vector2(leftPos.position.x, leftPos.position.y + jumpHeight));
         railPositionsUp.Add(new Vector2(transform.position.x, transform.position.y + jumpHeight));
         railPositionsUp.Add(new Vector2(rightPos.position.x, rightPos.position.y + jumpHeight));
+
+        
+        //Play flare animation immediately
+        flare = GameObject.FindWithTag("flare");
+        flareAnim = flare.GetComponent<Animator>();
+        enableFlare();
     }
 
     private void FixedUpdate()
@@ -103,6 +116,9 @@ public class Player : MonoBehaviour
                     rb.velocity = Vector2.zero;
                     transform.position = railPositions[railPosIdx];
                     movingPlayerDown = false;
+
+                    //Resume flare animation
+                    enableFlare();
                 }
 
             }
@@ -158,6 +174,8 @@ public class Player : MonoBehaviour
                     movingPlayerLeft = false;
                     rb.velocity = Vector2.zero;
                     transform.position = railPositions[railPosIdx];
+
+                    enableFlare();
                 }
             }
             if (movingPlayerRight)
@@ -168,6 +186,8 @@ public class Player : MonoBehaviour
                     movingPlayerRight = false;
                     rb.velocity = Vector2.zero;
                     transform.position = railPositions[railPosIdx];
+
+                    enableFlare();
                 }
             }
 
@@ -205,6 +225,10 @@ public class Player : MonoBehaviour
             {
                 if (railPosIdx > 0)
                 {
+                    //Stop flare animation
+                    disableFlare();
+                    createSpark();
+
                     movingPlayerHorizontal = true;
                     movingPlayerLeft = true;
                     railPosIdx--;
@@ -215,6 +239,10 @@ public class Player : MonoBehaviour
             {
                 if (railPosIdx < 2)
                 {
+                    //Stop flare animation
+                    disableFlare();
+                    createSpark();
+
                     movingPlayerHorizontal = true;
                     movingPlayerRight = true;
                     railPosIdx++;
@@ -222,6 +250,9 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
+                //Stop flare animation
+                disableFlare();
+                createSpark();
 
                 movingPlayerUp = true;
             }
@@ -261,5 +292,23 @@ public class Player : MonoBehaviour
         //rb.velocity = Vector2.zero;
         rb.gravityScale = 2;
         playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
+    }
+
+    private void disableFlare()
+    {
+        flareAnim.enabled = false;
+        flare.GetComponent<SpriteRenderer>().material.color = new Color(1f, 1f, 1f, 0f);
+    }
+
+    private void enableFlare()
+    {
+        flareAnim.enabled = true;
+        flare.GetComponent<SpriteRenderer>().material.color = new Color(1f, 1f, 1f, 1f);
+        flareAnim.Play("Flare");
+    }
+    private void createSpark()
+    {
+        Transform spark = Instantiate(sparkPrefab, playerTransform.position - new Vector3(4.29f, 4.2f, 0), Quaternion.identity);
+        Destroy(spark.gameObject, 0.5f);
     }
 }
