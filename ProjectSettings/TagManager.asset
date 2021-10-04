@@ -6,6 +6,7 @@ TagManager:
   tags:
   - flare
   - World
+  - MainMenu
   - RestartLevel
   layers:
   - Default
