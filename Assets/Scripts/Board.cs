@@ -43,6 +43,10 @@ public class Board : MonoBehaviour
         }
         if (collision.gameObject.layer == LayerMask.NameToLayer("CompletedLevel"))
         {
+            SceneManager.LoadScene("Level2");
+        }
+        if (collision.gameObject.layer == LayerMask.NameToLayer("CompletedGame"))
+        {
             SceneManager.LoadScene("CreditsScene");
         }
     }
