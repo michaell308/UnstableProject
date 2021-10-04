@@ -153,7 +153,7 @@ public class Player : MonoBehaviour
 
                         //Resume flare animation
                         enableFlare();
-                        jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
+                        jumpAudioSource.PlayOneShot(landClipSfx, 0.8f);
                         grindingAudioSource.UnPause();
                         grinding.shouldTilt = true;
                     }
