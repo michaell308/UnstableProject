@@ -8,7 +8,7 @@ public class Grinding : MonoBehaviour
     public float autoTiltSpeed = 20;
     private Vector3 originalRotation;
 
-    public static bool shouldTilt = true;
+    public bool shouldTilt = true;
 
     GameObject player = null;
 

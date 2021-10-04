@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class Board : MonoBehaviour
 {
     public bool onHazard = false;
@@ -23,6 +23,7 @@ public class Board : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("ONTRIGGERENTER");
         if (collision.gameObject.layer == LayerMask.NameToLayer("Hazard"))
         {
             onHazard = true;
@@ -33,6 +34,16 @@ public class Board : MonoBehaviour
                 Debug.Log("you died...");
                 player.Death(10);
             }
+        }
+        if (collision.gameObject.layer == LayerMask.NameToLayer("RestartLevel"))
+        {
+            //Debug.Log("RESTART THE LEVEL");
+            //Scene thisScene = SceneManager.GetActiveScene();
+            //SceneManager.LoadScene(thisScene.name);
+        }
+        if (collision.gameObject.layer == LayerMask.NameToLayer("CompletedLevel"))
+        {
+            SceneManager.LoadScene("CreditsScene");
         }
     }
     private void OnTriggerStay2D(Collider2D collision)

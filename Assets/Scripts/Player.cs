@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     private static Transform playerTransform;
@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     public int railPosIdx = 1;
     List<Vector2> railPositionsUp;
 
-    private static bool playerIsDead = false;
+    private bool playerIsDead = false;
 
     //variables to tweak jump numbers
     //public float jumpTime = 0.2f;
@@ -61,6 +61,8 @@ public class Player : MonoBehaviour
     public bool gameOver = false;
 
     public Animator idleAndJumpAnimator;
+
+    public Grinding grinding;
 
     // Start is called before the first frame update
     void Start()
@@ -153,7 +155,7 @@ public class Player : MonoBehaviour
                         enableFlare();
                         jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
                         grindingAudioSource.UnPause();
-                        Grinding.shouldTilt = true;
+                        grinding.shouldTilt = true;
                     }
                 }
 
@@ -304,7 +306,7 @@ public class Player : MonoBehaviour
                 createSpark();
 
                 movingPlayerUp = true;
-                Grinding.shouldTilt = false;
+                grinding.shouldTilt = false;
                 jumpAudioSource.PlayOneShot(jumpClipSfx, 0.5F);
             }
         }
@@ -348,8 +350,9 @@ public class Player : MonoBehaviour
             //rb.velocity = Vector2.zero;
             rb.gravityScale = 2;
             playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
-            Grinding.shouldTilt = false;
+            grinding.shouldTilt = false;
             disableFlare();
+            StartCoroutine("RestartLevel");
         }
     }
 
@@ -417,5 +420,12 @@ public class Player : MonoBehaviour
         //scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
         //Vector3 diff = transform.position - Vector3.zero;
         //scarfTransform.position = new Vector3(transform.position.x, transform.position.y+diff.y, 0);
+    }
+    IEnumerator RestartLevel()
+    {
+        yield return new WaitForSeconds(2f);
+        Scene thisScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(thisScene.name);
+        //movingPlayerVertical = false;
     }
 }
