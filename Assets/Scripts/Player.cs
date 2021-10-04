@@ -119,6 +119,7 @@ public class Player : MonoBehaviour
 
                     //Resume flare animation
                     enableFlare();
+                    Grinding.shouldTilt = true;
                 }
 
             }
@@ -255,6 +256,7 @@ public class Player : MonoBehaviour
                 createSpark();
 
                 movingPlayerUp = true;
+                Grinding.shouldTilt = false;
             }
         }
     }
@@ -292,6 +294,7 @@ public class Player : MonoBehaviour
         //rb.velocity = Vector2.zero;
         rb.gravityScale = 2;
         playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
+        Grinding.shouldTilt = false;
     }
 
     private void disableFlare()
