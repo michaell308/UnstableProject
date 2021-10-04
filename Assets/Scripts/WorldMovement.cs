@@ -10,7 +10,13 @@ public class WorldMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.AddForce(-transform.right * speed * Time.deltaTime, ForceMode2D.Impulse);
+        //rb.AddForce(-transform.right * speed * Time.deltaTime, ForceMode2D.Impulse);
+        
+    }
+
+    private void FixedUpdate()
+    {
+        rb.velocity = -transform.right * speed * Time.deltaTime;
     }
 
     // Update is called once per frame
