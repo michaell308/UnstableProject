@@ -10,9 +10,15 @@ public class Grinding : MonoBehaviour
 
     public static bool shouldTilt = true;
 
+    GameObject player = null;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (player == null)
+        {
+            player = GameObject.FindWithTag("Player");
+        }
         originalRotation = transform.eulerAngles;
     }
 
@@ -58,7 +64,7 @@ public class Grinding : MonoBehaviour
             if (currentAngle >= 32 && currentAngle <= 292)
             {
                 Debug.Log("DEATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-                Player.Death();
+                player.GetComponent<Player>().Death();
             }
             /*if (transform.localRotation.eulerAngles.z <= 320) {
                 Debug.Log("death");

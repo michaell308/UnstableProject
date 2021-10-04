@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
+    GameObject player = null;
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (player == null)
+        {
+            player = GameObject.FindWithTag("Player");
+        }
     }
 
     // Update is called once per frame
@@ -20,10 +24,10 @@ public class Board : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Hazard"))
         {
-            if (Player.railPosIdx == collision.GetComponentInParent<HazardGroup>().railNum)
+            if (player.GetComponent<Player>().railPosIdx == collision.GetComponentInParent<HazardGroup>().railNum)
             {
                 Debug.Log("you died...");
-                Player.Death();
+                player.GetComponent<Player>().Death();
             }
         }
     }
