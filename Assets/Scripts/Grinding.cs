@@ -43,17 +43,17 @@ public class Grinding : MonoBehaviour
             }
 
             float currentAngle = transform.localRotation.eulerAngles.z;
-            Debug.Log(currentAngle);
+            //Debug.Log(currentAngle); //PRINT ANGLE HERE -- angel print statement
             if ((currentAngle > 292 || Mathf.Approximately(currentAngle,292)) && (currentAngle < 342 || Mathf.Approximately(currentAngle,342)))
             {
-                Debug.Log("right");
+                //Debug.Log("right");
                 transform.Rotate(0.0f, 0.0f, -autoTiltSpeed * Time.deltaTime); //this tilts us to the right
             }
             else if (((currentAngle > 342 || Mathf.Approximately(currentAngle,342)) && (currentAngle < 360 || Mathf.Approximately(currentAngle,360))) ||
                 ((currentAngle > 0 || Mathf.Approximately(currentAngle, 0)) && (currentAngle <= 32 || Mathf.Approximately(currentAngle,32))) 
                 || currentAngle < 0)
             {
-                Debug.Log("left");
+                //Debug.Log("left");
                 transform.Rotate(0.0f, 0.0f, autoTiltSpeed * Time.deltaTime);
             }
 
@@ -64,7 +64,7 @@ public class Grinding : MonoBehaviour
             if (currentAngle >= 32 && currentAngle <= 292)
             {
                 Debug.Log("DEATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-                player.GetComponent<Player>().Death();
+                player.GetComponent<Player>().Death(5);
             }
             /*if (transform.localRotation.eulerAngles.z <= 320) {
                 Debug.Log("death");

@@ -18,8 +18,8 @@ public class Player : MonoBehaviour
     //Booleans for key input
     bool movingPlayerLeft = false;
     bool movingPlayerRight = false;
-    bool movingPlayerUp = false;
-    bool movingPlayerDown = false;
+    public bool movingPlayerUp = false;
+    public bool movingPlayerDown = false;
     Vector3 dir = Vector2.zero;
 
     List<Vector2> railPositions;
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     //variables to tweak jump numbers
     //public float jumpTime = 0.2f;
     //public int jumpVelocity = 30;
-    public int jumpHeight = 5;
+    public float jumpHeight = 5;
     public int upJumpVelocity = 700;
     public int downJumpVelocity = 500;
     public int minUpVelocity = 100;
@@ -51,6 +51,16 @@ public class Player : MonoBehaviour
     public AudioSource jumpAudioSource;
     public AudioSource deathAudioSource;
     public AudioSource grindingAudioSource;
+
+    public Transform boardCollider;
+    public Transform scarfTransform;
+    public Transform playerCharacterSprite;
+
+    public Transform scarfPositionOnPlayer;
+
+    public bool gameOver = false;
+
+    public Animator idleAndJumpAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -84,6 +94,7 @@ public class Player : MonoBehaviour
             //Check if vertical button is pressed.
             if (movingPlayerUp)
             {
+                moveScarfPositionVertical();
                 if (dir == Vector3.zero)
                 {
                     dir = railPositionsUp[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
@@ -106,6 +117,7 @@ public class Player : MonoBehaviour
 
             if (movingPlayerDown)
             {
+                moveScarfPositionVertical();
                 if (dir == Vector3.zero)
                 {
                     dir = railPositions[railPosIdx] - new Vector2(transform.position.x, transform.position.y);
@@ -114,35 +126,48 @@ public class Player : MonoBehaviour
                 Vector3 dir2 = new Vector2(0, jumpHeight) + (railPositions[railPosIdx] - new Vector2(transform.position.x, transform.position.y));// - ;
                 
                 dir2 = -dir2;
-                Debug.Log(dir2);
+                //Debug.Log(dir2);
                 rb.velocity = Time.deltaTime * (new Vector3(0, -minDownVelocity) + (dir2 * downJumpVelocity));
                 //rb.velocity = Time.deltaTime * (new Vector3(0, -minDownVelocity) + (dir2 * downJumpVelocity));
                 //dir2 = -dir2;
-                if (dir2.y <= -jumpHeight)
+                if (dir2.y < -jumpHeight || Mathf.Approximately(dir2.y, -jumpHeight))
                 {
-                    Debug.Log("stop going down");
-                    dir = Vector3.zero;
+                    if (boardCollider.GetComponent<Board>().onHazard)
+                    {
+                        Debug.Log("let them fall");
+                        Death(10);
+                    }
+                    else
+                    {
+                        //successfully landed after a jump here
+                        Debug.Log("stop going down");
+                        idleAndJumpAnimator.Play("Idle");
+                        dir = Vector3.zero;
 
-                    rb.velocity = Vector2.zero;
-                    transform.position = railPositions[railPosIdx];
-                    movingPlayerDown = false;
+                        rb.velocity = Vector2.zero;
+                        transform.position = railPositions[railPosIdx];
+                        //scarfTransform.position = new Vector2(transform.position.x)
+                        movingPlayerDown = false;
 
-                    //Resume flare animation
-                    enableFlare();
-                    jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
-                    grindingAudioSource.UnPause();
-                    Grinding.shouldTilt = true;
+                        //Resume flare animation
+                        enableFlare();
+                        jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
+                        grindingAudioSource.UnPause();
+                        Grinding.shouldTilt = true;
+                    }
                 }
 
             }
 
             if (movingPlayerLeft)
             {
+                moveScarfPositionHorizontal();
                 // var heading = transform.position - leftPos.position;
                 //rb.velocity = -heading * 999;
                 if (dir == Vector3.zero)
                 {
                     dir = leftPos.position - transform.position;
+                    //scarfTransform.position = new Vector3(transform.position.x-0.02f, transform.position.y+0.09f, 0);
                 }
                 rb.velocity = dir.normalized * 1000 * Time.deltaTime;
                 //Apply left horizontal velocity
@@ -154,6 +179,7 @@ public class Player : MonoBehaviour
             //Check if right is pressed
             if (movingPlayerRight)
             {
+                moveScarfPositionHorizontal();
                 if (dir == Vector3.zero)
                 {
                     dir = rightPos.position - transform.position;
@@ -169,6 +195,10 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameOver)
+        {
+            scarfTransform.position = new Vector3(playerCharacterSprite.position.x, playerCharacterSprite.position.y, scarfTransform.position.z);
+        }
         if (!playerIsDead)
         {
             /*if (movingPlayerHorizontal && transform.position != railPositions[railPosIdx])
@@ -183,10 +213,13 @@ public class Player : MonoBehaviour
             {
                 if (transform.position.x < railPositions[railPosIdx].x || transform.position.y > railPositions[railPosIdx].y)
                 {
+
                     dir = Vector3.zero;
                     movingPlayerLeft = false;
                     rb.velocity = Vector2.zero;
                     transform.position = railPositions[railPosIdx];
+                    //Debug.Log("TRANSFORM POSITION: " + transform.position);
+                    moveScarfPositionHorizontal();
 
                     enableFlare();
                 }
@@ -199,6 +232,7 @@ public class Player : MonoBehaviour
                     movingPlayerRight = false;
                     rb.velocity = Vector2.zero;
                     transform.position = railPositions[railPosIdx];
+                    moveScarfPositionHorizontal();
 
                     enableFlare();
                 }
@@ -263,6 +297,7 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
+                idleAndJumpAnimator.Play("Jump");
                 grindingAudioSource.Pause();
                 //Stop flare animation
                 disableFlare();
@@ -300,17 +335,22 @@ public class Player : MonoBehaviour
         rb.velocity = Vector2.zero;
     }*/
 
-    public void Death()
+    public void Death(int deathVelocity)
     {
-        deathAudioSource.PlayOneShot(deathClipSfx, 0.5f);
-        playerIsDead = true;
-        Debug.Log("player death");
-        rb.velocity = rb.velocity.normalized * 5;
-        //rb.velocity = Vector2.zero;
-        rb.gravityScale = 2;
-        playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
-        Grinding.shouldTilt = false;
-        disableFlare();
+        if (!gameOver)
+        {
+            gameOver = true;
+            moveScarfPositionHorizontal();
+            deathAudioSource.PlayOneShot(deathClipSfx, 0.5f);
+            playerIsDead = true;
+            Debug.Log("player death");
+            rb.velocity = rb.velocity.normalized * deathVelocity;
+            //rb.velocity = Vector2.zero;
+            rb.gravityScale = 2;
+            playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
+            Grinding.shouldTilt = false;
+            disableFlare();
+        }
     }
 
     private void disableFlare()
@@ -329,5 +369,47 @@ public class Player : MonoBehaviour
     {
         Transform spark = Instantiate(sparkPrefab, playerTransform.position - new Vector3(4.29f, 4.2f, 0), Quaternion.identity);
         Destroy(spark.gameObject, 0.5f);
+    }
+
+    private void moveScarfPositionHorizontal()
+    {
+        int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
+
+        if (curFrame == 0) //regular
+        {
+            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
+        }
+        else if (curFrame == 1) //down
+        {
+            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.22f, 0);
+        }
+        else //bottom
+        {
+            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.29f, 0);
+        }
+    }
+
+    private void moveScarfPositionVertical()
+    {
+        /*int curFrame = playerCharacterSprite.GetComponent<AnimateScarf>().frameNum;
+
+        if (curFrame == 0) //regular
+        {
+            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.15f, 0);
+        }
+        else if (curFrame == 1) //down
+        {
+            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.22f, 0);
+        }
+        else //bottom
+        {
+            scarfTransform.position = new Vector3(transform.position.x - 2.11f, transform.position.y - 2.29f, 0);
+        }*/
+       // Debug.Log("p1: " + scarfPositionOnPlayer.position);
+      //  Debug.Log("p2: " + scarfPositionOnPlayer.localPosition);
+      //  Debug.Log("p3: " + scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition));
+       // scarfTransform.position = scarfPositionOnPlayer.TransformPoint(scarfPositionOnPlayer.localPosition);
+        //Vector3 diff = transform.position - Vector3.zero;
+        //scarfTransform.position = new Vector3(transform.position.x, transform.position.y+diff.y, 0);
     }
 }
