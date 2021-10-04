@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     Vector3 dir = Vector2.zero;
 
     List<Vector2> railPositions;
-    public static int railPosIdx = 1;
+    public int railPosIdx = 1;
     List<Vector2> railPositionsUp;
 
     private static bool playerIsDead = false;
@@ -38,11 +38,19 @@ public class Player : MonoBehaviour
     public int minDownVelocity = 100;
 
     //References for object that contains flare animation
-    public GameObject flare;
-    public Animator flareAnim;
+    private GameObject flare;
+    private Animator flareAnim;
 
     //IEnumerator? Need to play animation and THEN  delete it.
     public Transform sparkPrefab;
+
+    public AudioClip jumpClipSfx;
+    public AudioClip landClipSfx;
+    public AudioClip deathClipSfx;
+    public AudioClip grindingClipSfx;
+    public AudioSource jumpAudioSource;
+    public AudioSource deathAudioSource;
+    public AudioSource grindingAudioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -65,6 +73,8 @@ public class Player : MonoBehaviour
         flare = GameObject.FindWithTag("flare");
         flareAnim = flare.GetComponent<Animator>();
         enableFlare();
+
+        grindingAudioSource.Play();
     }
 
     private void FixedUpdate()
@@ -119,6 +129,8 @@ public class Player : MonoBehaviour
 
                     //Resume flare animation
                     enableFlare();
+                    jumpAudioSource.PlayOneShot(landClipSfx, 0.5f);
+                    grindingAudioSource.UnPause();
                     Grinding.shouldTilt = true;
                 }
 
@@ -251,12 +263,14 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W) && !movingPlayerVertical && !movingPlayerHorizontal)
             {
+                grindingAudioSource.Pause();
                 //Stop flare animation
                 disableFlare();
                 createSpark();
 
                 movingPlayerUp = true;
                 Grinding.shouldTilt = false;
+                jumpAudioSource.PlayOneShot(jumpClipSfx, 0.5F);
             }
         }
     }
@@ -286,8 +300,9 @@ public class Player : MonoBehaviour
         rb.velocity = Vector2.zero;
     }*/
 
-    public static void Death()
+    public void Death()
     {
+        deathAudioSource.PlayOneShot(deathClipSfx, 0.5f);
         playerIsDead = true;
         Debug.Log("player death");
         rb.velocity = rb.velocity.normalized * 5;
@@ -295,6 +310,7 @@ public class Player : MonoBehaviour
         rb.gravityScale = 2;
         playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.transform.position.y, 140);
         Grinding.shouldTilt = false;
+        disableFlare();
     }
 
     private void disableFlare()
