@@ -12,10 +12,10 @@ public class AttachedTo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (shouldPingPong)
+        /*if (shouldPingPong)
         {
             StartCoroutine("moveScarfDown");
-        }
+        }*/
     }
 
     // Update is called once per frame
